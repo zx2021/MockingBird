@@ -51,7 +51,9 @@
 * 进行音频和梅尔频谱图预处理：
 `python encoder_preprocess.py <datasets_root>`
 使用`-d {dataset}` 指定数据集，支持 librispeech_other，voxceleb1，aidatatang_200zh，使用逗号分割处理多数据集。
-* 训练encoder: `python encoder_train.py my_run <datasets_root>/SV2TTS/encoder`
+* 安装训练依赖：将models、monotonic_align、utils文件夹放在已安装的pip依赖库中，即{python_install}\Python\Python39\Lib\site-packages
+> 以安装路径为C:\Users\xx\AppData\Local\Programs为例，应将文件夹放置在C:\Users\xx\AppData\Local\Programs\Python\Python39\Lib\site-packages
+* 训练encoder: `python control\cli\synthesizer_train.py my_run <datasets_root>/SV2TTS/encoder`
 > 训练encoder使用了visdom。你可以加上`-no_visdom`禁用visdom，但是有可视化会更好。在单独的命令行/进程中运行"visdom"来启动visdom服务器。
 
 #### 2.2 使用数据集自己训练合成器模型（与2.3二选一）
@@ -62,11 +64,12 @@
 * `-d {dataset}` 指定数据集，支持 aidatatang_200zh, magicdata, aishell3, data_aishell, 不传默认为aidatatang_200zh
 * `-n {number}` 指定并行数，CPU 11770k + 32GB实测10没有问题
 > 假如你下载的 `aidatatang_200zh`文件放在D盘，`train`文件路径为 `D:\data\aidatatang_200zh\corpus\train` , 你的`datasets_root`就是 `D:\data\`
-
+* 安装训练依赖：将models、monotonic_align、utils文件夹放在已安装的pip依赖库中，即{python_install}\Python\Python39\Lib\site-packages
+> 以安装路径为C:\Users\xx\AppData\Local\Programs为例，应将文件夹放置在C:\Users\xx\AppData\Local\Programs\Python\Python39\Lib\site-packages
 * 训练合成器：
-`python synthesizer_train.py mandarin <datasets_root>/SV2TTS/synthesizer`
+`python control\cli\synthesizer_train.py mandarin <datasets_root>/SV2TTS/synthesizer`
 
-* 当您在训练文件夹 *synthesizer/saved_models/* 中看到注意线显示和损失满足您的需要时，请转到`启动程序`一步。
+* 当您在训练文件夹 *data\ckpt\synthesizer\* 中看到注意线显示和损失满足您的需要时，请转到`启动程序`一步。
 
 #### 2.3使用社区预先训练好的合成器（与2.2二选一）
 > 当实在没有设备或者不想慢慢调试，可以使用社区贡献的模型(欢迎持续分享):
@@ -81,19 +84,16 @@
 #### 2.4训练声码器 (可选)
 对效果影响不大，已经预置3款，如果希望自己训练可以参考以下命令。
 * 预处理数据:
-`python vocoder_preprocess.py <datasets_root> -m <synthesizer_model_path>`
-> `<datasets_root>`替换为你的数据集目录，`<synthesizer_model_path>`替换为一个你最好的synthesizer模型目录，例如 *sythensizer\saved_models\xxx*
-
-
+`python control\cli\vocoder_preprocess.py <datasets_root> -m <synthesizer_model_path>`
+> `<datasets_root>`替换为你的数据集目录，`<synthesizer_model_path>`替换为一个你最好的synthesizer模型目录，例如 *data\ckpt\synthesizer\xxx*
 * 训练wavernn声码器:
-`python vocoder_train.py <trainid> <datasets_root>`
+`python control\cli\vocoder_train.py <trainid> <datasets_root>`
 > `<trainid>`替换为你想要的标识，同一标识再次训练时会延续原模型
-
 * 训练hifigan声码器:
-`python vocoder_train.py <trainid> <datasets_root> hifigan`
+`python control\cli\vocoder_train.py <trainid> <datasets_root> hifigan`
 > `<trainid>`替换为你想要的标识，同一标识再次训练时会延续原模型
 * 训练fregan声码器:
-`python vocoder_train.py <trainid> <datasets_root> --config config.json fregan`
+`python control\cli\vocoder_train.py <trainid> <datasets_root> --config config.json fregan`
 > `<trainid>`替换为你想要的标识，同一标识再次训练时会延续原模型
 * 将GAN声码器的训练切换为多GPU模式：修改GAN文件夹下.json文件中的"num_gpus"参数
 ### 3. 启动程序或工具箱
